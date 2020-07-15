@@ -1,0 +1,6 @@
+{
+  "logger": {
+    "logPrefix": "react-modules",
+    "logLevel": "trace"
+  }
+}

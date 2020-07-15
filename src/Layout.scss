@@ -1,0 +1,23 @@
+.content-container {
+
+    display: block;
+    margin: 0 auto;
+    width: 80%;
+
+    .flexbox {
+        height: 100vh;
+        width: 100%;
+    }
+
+}
+
+.deleteBtn {
+    height: 30px;
+    position: relative;
+    right: 90px;
+    top: 10px;
+}
+
+.card {
+    margin-bottom: 0;
+}
