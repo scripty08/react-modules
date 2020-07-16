@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, Fragment } from 'react';
+import {
+    DeleteButton as ScriptyDeleteButton,
+    EditButton as ScriptyEditButton,
+} from '@scripty/react-buttons';
 
-// fake data generator
 export const getItems = (count, offset = 0) =>
     Array.from({ length: count }, (v, k) => k).map(k => ({
         id: `item-${k + offset}`,
         content: `<div>item ${k + offset}</div>`
     }));
 
-// a little function to help us with reordering the result
 export const reorder = (list, startIndex, endIndex) => {
     const result = Array.from(list);
     const [removed] = result.splice(startIndex, 1);
@@ -16,9 +18,6 @@ export const reorder = (list, startIndex, endIndex) => {
     return result;
 };
 
-/**
- * Moves an item from one list to another list.
- */
 export const move = (source, destination, droppableSource, droppableDestination) => {
     const sourceClone = Array.from(source);
     const destClone = Array.from(destination);
@@ -88,3 +87,85 @@ export const onDragEndHelper = (result, state, setState) => {
         setState(newState.filter(group => group.length));
     }
 }
+
+const onDeleteButtonClick = (ind, index, state, setState) => {
+    const newState = [...state];
+    newState[ind].splice(index, 1);
+    setState(
+        newState.filter(group => group.length)
+    );
+}
+
+export const DeleteButton = ({ ind, index, state, setState, editing }) => {
+    if (editing) {
+        return (
+            <ScriptyDeleteButton
+                iconBtn
+                color={'white'}
+                style={{
+                    position: 'absolute',
+                    top: 10,
+                    right: 5
+                }}
+                onClick={onDeleteButtonClick.bind(null, ind, index, state, setState)}
+            >
+                delete
+            </ScriptyDeleteButton>
+        );
+    }
+    return null;
+}
+
+export const EditButton = ({ onEditBtnClick, editing }) => {
+    if (editing) {
+        return (
+            <ScriptyEditButton
+                iconBtn
+                color={'white'}
+                style={{
+                    position: 'absolute',
+                    top: 10,
+                    right: 36
+                }}
+                onClick={onEditBtnClick}
+            >
+                delete
+            </ScriptyEditButton>
+        );
+    }
+    return null;
+}
+
+export const cleanPlacements = (placements) => {
+    Object.keys(placements).forEach((key) => {
+        placements[key].map((placement) => {
+            delete placement['content']
+        });
+    });
+
+    return placements;
+};
+
+export const updatePlacements = (modules, layouts, components) => {
+    return layouts.map((record) => {
+        let blub = record.map((layout, idx) => {
+            let jo = modules.map((rec, index) => {
+                const Component = components[rec.type];
+                if (layout.id === 'item-' + index) {
+                    if (Component) {
+                        const Component = components[rec.type];
+                        const plugin = rec.plugin[0];
+
+                        return { id: layout.id, content: <Component {...plugin}/> };
+
+                    } else {
+                        return null;
+                    }
+                }
+
+            }).filter(mapped => typeof mapped !== 'undefined' && mapped !== null);
+            return jo[0];
+        }).filter(mapped => typeof mapped !== 'undefined' && mapped !== null);
+        return blub;
+    })
+};

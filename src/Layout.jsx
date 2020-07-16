@@ -1,59 +1,34 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import 'react-simple-flex-grid/lib/main.css';
 import { Col, Row } from 'react-simple-flex-grid';
-import { reorder, move, colLayout, getListStyle, getItemStyle, getItems, onDragEndHelper } from './utils';
-import { Button } from '@scripty/react-buttons';
+import {
+    colLayout,
+    getListStyle,
+    getItemStyle,
+    onDragEndHelper,
+    DeleteButton, EditButton
+} from './utils';
+
+import { Toolbar } from './Toolbar';
 import './Layout.scss';
 
 export const Layout = (props) => {
-    const { state, setState } = props;
+    const { state, setState, onSaveBtnClick, onEditBtnClick, onAddBtnClick, editing = false} = props;
 
     const onDragEnd = (result) => {
         onDragEndHelper(result, state, setState);
     }
 
-    const onDeleteButtonClick = (ind, index) => {
-        const newState = [...state];
-        newState[ind].splice(index, 1);
-        setState(
-            newState.filter(group => group.length)
-        );
-    }
-
-    const getDeleteButton = (ind, index) => {
-        return (
-            <Button
-                style={{
-                    height: 30
-                }}
-                className={'deleteBtn'}
-                onClick={onDeleteButtonClick.bind(null, ind, index)}
-            >
-                delete
-            </Button>
-        );
-    }
-
     return (
         <div className={'content-container'}>
-            <div>
-                <button
-                    type="button"
-                    onClick={() => {
-                        setState([...state, []]);
-                    }}
-                >
-                    Add new group
-                </button>
-                <button
-                    type="button"
-                    onClick={() => {
-                        setState([...state, getItems(1)]);
-                    }}
-                >
-                    Add new item
-                </button>
+            <Toolbar
+                state={state}
+                setState={setState}
+                onSaveBtnClick={onSaveBtnClick}
+                onAddBtnClick={onAddBtnClick}
+                editing={editing}
+            />
                 <Row style={{ display: 'flex' }}>
                     <DragDropContext onDragEnd={onDragEnd}>
                         {state.map((el, ind) => {
@@ -68,8 +43,8 @@ export const Layout = (props) => {
                                 coller = colLayout.extra;
                             }
 
-                            return (<Col {...coller}>
-                                    <Droppable key={ind} droppableId={`${ind}`}>
+                            return (<Col {...coller} key={ind}>
+                                    <Droppable isDropDisabled={!editing} droppableId={`${ind}`}>
                                         {(provided, snapshot) => (
                                             <div
                                                 ref={provided.innerRef}
@@ -78,6 +53,7 @@ export const Layout = (props) => {
                                             >
                                                 {el.map((item, index) => (
                                                     <Draggable
+                                                        isDragDisabled={!editing}
                                                         key={item.id}
                                                         draggableId={item.id}
                                                         index={index}
@@ -92,9 +68,16 @@ export const Layout = (props) => {
                                                                     provided.draggableProps.style
                                                                 )}
                                                             >
-                                                                <div>
+                                                                <div style={{position: 'relative'}}>
                                                                     {item.content}
-
+                                                                    <EditButton editing={editing} onEditButtonClick={onEditBtnClick} />
+                                                                    <DeleteButton
+                                                                        ind={ind}
+                                                                        index={index}
+                                                                        state={state}
+                                                                        setState={setState}
+                                                                        editing={editing}
+                                                                    />
                                                                 </div>
                                                             </div>
                                                         )}
@@ -109,7 +92,6 @@ export const Layout = (props) => {
                         })}
                     </DragDropContext>
                 </Row>
-            </div>
         </div>
     );
 }

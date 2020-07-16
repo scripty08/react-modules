@@ -1,10 +1,8 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import 'react-simple-flex-grid/lib/main.css';
 import { useStore } from '@scripty/react-store';
-import { getModule, updatePlacements } from '../../src';
+import { cleanPlacements, Modules, updatePlacements } from '../../src';
 import { Articles } from './Articles';
-import { Layout } from '../../src/Layout';
-import { SaveButton } from '@scripty/react-buttons';
 
 export const Example = () => {
 
@@ -18,20 +16,50 @@ export const Example = () => {
     }, []);
 
     useEffect(() => {
-        let blub = updatePlacements(modules, layout, {Articles})
-        setPlacements(blub);
+        let updatedPlacements = updatePlacements(modules, layout, {Articles})
+        setPlacements(updatedPlacements);
     }, [modules]);
 
     const onSaveBtnClick = () => {
-        const cleadPlacements = getModule(placements);
-        modulesStore.proxy.updateLayout({assignment: 'Dashboard', layout: cleadPlacements})
+        const cleanedPlacements = cleanPlacements(placements);
+        modulesStore.proxy.updateLayout({assignment: 'Dashboard', layout: cleanedPlacements})
     };
 
-    return (
-        <Fragment>
-            <SaveButton onClick={onSaveBtnClick}/>
-            <Layout state={placements} setState={setPlacements} />
-        </Fragment>
+    const onAddBtnClick = (state) => {
 
+        layout[1].push(
+            {
+                id: 'item-28'
+            }
+        );
+
+        modules.push({
+            assignment: {
+                type: 'selected', value: ['Dashbaord']
+            },
+            type: 'Articles',
+            plugin: [{
+                title: 'bla',
+                html: 'blub'
+            }]
+        });
+
+        console.log(layout, ' layout <------------');
+
+        let updatedPlacements = updatePlacements(modules, layout, {Articles})
+        setPlacements(updatedPlacements);
+        console.log(modules, ' modules <------------');
+        console.log(updatedPlacements, '  updatedPlacements <------------');
+    }
+
+
+    return (
+        <Modules
+            state={placements}
+            setState={setPlacements}
+            onSaveBtnClick={onSaveBtnClick}
+            onAddBtnClick={onAddBtnClick}
+            editing={true}
+        />
     )
 }
