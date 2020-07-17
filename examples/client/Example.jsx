@@ -7,21 +7,27 @@ import { Article } from '@scripty/react-articles';
 export const Example = () => {
 
     const { modulesStore } = useStore('modulesStore');
+    const { layoutsStore } = useStore('layoutsStore');
     const { articlesStore } = useStore('articlesStore');
     const modules = modulesStore.getAt(0).get('modules');
     const layout = modulesStore.getAt(0).get('layout');
     const articles = articlesStore.getAt(0);
     const [ placements, setPlacements ] = useState(layout);
+    const layouts = layoutsStore.getAt(0).get('layout');
 
     useEffect(() => {
         modulesStore.proxy.findModules({assignment: 'Dashboard'});
+        layoutsStore.proxy.read({assignment: 'Dashboard'});
     }, []);
 
     useEffect(() => {
-        updateLayout(modules);
+        updateLayout(layout);
     }, [modules]);
 
-    const updateLayout = (modules, newItem) => {
+
+    console.log(layoutsStore.getAt(0).get('layout'), ' layouts <------------');
+
+    const updateLayout = (layout, newItem) => {
 
         if (newItem) {
             layout[1].unshift({ id: newItem.id });
@@ -34,7 +40,8 @@ export const Example = () => {
             showEditBtn: true
         }
 
-        let updatedPlacements = updatePlacements(modules, layout, {Article}, props)
+        let updatedPlacements = updatePlacements(layout, {Article}, props)
+        console.log(updatedPlacements, ' updatedPlacements <------------');
         return setPlacements(updatedPlacements);
     }
 
@@ -138,6 +145,9 @@ export const Example = () => {
         setPlacements(placements);
         modulesStore.getAt(0).set('layout', placements);
     }
+
+
+    console.log(placements, ' placements <------------');
 
     return (
         <Modules
