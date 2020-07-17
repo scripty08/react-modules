@@ -1,5 +1,6 @@
 import { Server, IndexController } from '@scripty/server';
 import { ModulesController } from '@scripty/modules';
+import ArticlesController from '@scripty/articles';
 import dotenv from 'dotenv'
 import { mongo } from '@scripty/mongo';
 
@@ -24,6 +25,7 @@ const init = async () => {
     await server.setDatabase(mongoose);
     await server.addController(new IndexController({ title: '@scripty/react-modules' }));
     await server.addController(new ModulesController());
+    await server.addController(new ArticlesController());
     server.start(3012);
 };
 

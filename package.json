@@ -25,7 +25,9 @@
     "compile": "node node_modules/@babel/cli/bin/babel.js src --out-dir lib --copy-files"
   },
   "dependencies": {
-    "@scripty/modules": "^0.1.4",
+    "@scripty/articles": "^0.1.7",
+    "@scripty/modules": "^0.1.6",
+    "@scripty/react-articles": "^0.1.4",
     "@scripty/react-buttons": "^0.1.5",
     "@scripty/react-card": "^0.1.1",
     "i": "^0.3.6",

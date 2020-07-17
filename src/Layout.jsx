@@ -14,7 +14,7 @@ import { Toolbar } from './Toolbar';
 import './Layout.scss';
 
 export const Layout = (props) => {
-    const { state, setState, onSaveBtnClick, onEditBtnClick, onAddBtnClick, editing = false} = props;
+    const { state, setState, onSaveBtnClick, onEditBtnClick, onAddBtnClick, editing = false, modules} = props;
 
     const onDragEnd = (result) => {
         onDragEndHelper(result, state, setState);
@@ -28,6 +28,7 @@ export const Layout = (props) => {
                 onSaveBtnClick={onSaveBtnClick}
                 onAddBtnClick={onAddBtnClick}
                 editing={editing}
+                modules={modules}
             />
                 <Row style={{ display: 'flex' }}>
                     <DragDropContext onDragEnd={onDragEnd}>
@@ -70,14 +71,14 @@ export const Layout = (props) => {
                                                             >
                                                                 <div style={{position: 'relative'}}>
                                                                     {item.content}
-                                                                    <EditButton editing={editing} onEditButtonClick={onEditBtnClick} />
+                                                                    {/*<EditButton editing={editing} onEditButtonClick={onEditBtnClick} />
                                                                     <DeleteButton
                                                                         ind={ind}
                                                                         index={index}
                                                                         state={state}
                                                                         setState={setState}
                                                                         editing={editing}
-                                                                    />
+                                                                    />*/}
                                                                 </div>
                                                             </div>
                                                         )}

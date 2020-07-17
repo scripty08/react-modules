@@ -4,10 +4,17 @@ import {
     EditButton as ScriptyEditButton,
 } from '@scripty/react-buttons';
 
-export const getItems = (count, offset = 0) =>
+export const getCount = (state) => {
+    let col1 = state[0].length;
+    let col2 = state[1].length;
+    let col3 = state[2].length;
+    return col1 + col2 + col3 +1;
+}
+
+export const getItems = (count, offset = 0, component) =>
     Array.from({ length: count }, (v, k) => k).map(k => ({
         id: `item-${k + offset}`,
-        content: `<div>item ${k + offset}</div>`
+        content: component
     }));
 
 export const reorder = (list, startIndex, endIndex) => {
@@ -146,20 +153,20 @@ export const cleanPlacements = (placements) => {
     return placements;
 };
 
-export const updatePlacements = (modules, layouts, components) => {
+export const updatePlacements = (modules, layouts, components, props) => {
     return layouts.map((record) => {
         let blub = record.map((layout, idx) => {
             let jo = modules.map((rec, index) => {
                 const Component = components[rec.type];
-                if (layout.id === 'item-' + index) {
-                    if (Component) {
-                        const Component = components[rec.type];
-                        const plugin = rec.plugin[0];
+                if (rec.plugin[0]) {
+                    if (layout.id === rec.plugin[0].layout_id) {
+                        if (Component) {
+                            const plugin = rec.plugin[0];
+                            return { id: layout.id, content: <Component {...plugin} {...props}/> };
 
-                        return { id: layout.id, content: <Component {...plugin}/> };
-
-                    } else {
-                        return null;
+                        } else {
+                            return null;
+                        }
                     }
                 }
 

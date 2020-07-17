@@ -1,7 +1,7 @@
 import { createStore } from '@scripty/react-store';
 
 export default createStore({
-    name: 'routesStore',
+    name: 'modulesStore',
     model: {
         fields: [
             { name: 'modules', type: 'array' },
@@ -17,6 +17,10 @@ export default createStore({
             },
             updateLayout: {
                 url: '/modules/updateLayout',
+                method: 'post'
+            },
+            updateModule: {
+                url: '/modules/updateModule',
                 method: 'post'
             }
         }
