@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@scripty/articles": "^0.1.7",
-    "@scripty/modules": "^0.1.6",
+    "@scripty/modules": "^0.1.8",
     "@scripty/react-articles": "^0.1.4",
     "@scripty/react-buttons": "^0.1.5",
     "@scripty/react-card": "^0.1.1",

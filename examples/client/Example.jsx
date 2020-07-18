@@ -1,50 +1,42 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import 'react-simple-flex-grid/lib/main.css';
 import { useStore } from '@scripty/react-store';
 import { cleanPlacements, getCount, getItems, Modules, updatePlacements } from '../../src';
 import { Article } from '@scripty/react-articles';
 
 export const Example = () => {
-
     const { modulesStore } = useStore('modulesStore');
     const { articlesStore } = useStore('articlesStore');
-    const modules = modulesStore.getAt(0).get('modules');
-    const layout = modulesStore.getAt(0).get('layout');
+    const records = modulesStore.getAt(0);
+    const modules = records.get('modules');
+    const placements = records.get('placements');
     const articles = articlesStore.getAt(0);
-    const [ placements, setPlacements ] = useState(layout);
 
     useEffect(() => {
         modulesStore.proxy.findModules({assignment: 'Dashboard'});
     }, []);
 
     useEffect(() => {
-        updateLayout(modules);
+        updatePlacement(modules);
     }, [modules]);
 
-    const updateLayout = (modules, newItem) => {
-
-        if (newItem) {
-            layout[1].unshift({ id: newItem.id });
-        }
-
+    const updatePlacement = (modules, newItem) => {
         const props = {
             onOkBtnClick: onOkBtnClick,
             onCancelBtnClick,
             onChange: onArticleChange,
             showEditBtn: true
-        }
+        };
 
-        let updatedPlacements = updatePlacements(modules, layout, {Article}, props)
-        return setPlacements(updatedPlacements);
+        let updatedPlacements = updatePlacements(modules, placements, {Article}, props)
+        records.set({ placements: updatedPlacements });
     }
 
     const onOkBtnClick = () => {
-        modulesStore.getAt(0).set('layout', layout);
+        records.set({ placements });
 
         if (articles.action === 'edit') {
-            let store = modulesStore.getAt(0);
-
-            let all = store.modules.map((record) => {
+            let updatedModules = modules.map((record) => {
                 if (record.module_id === articles._id) {
                     record.plugin[0] = articles;
                     return record;
@@ -53,12 +45,10 @@ export const Example = () => {
                 }
             });
 
-            return updateLayout(all)
+            return updatePlacement(updatedModules)
         }
 
-
-        let store = modulesStore.getAt(0);
-        store.modules.push({
+        modules.push({
             assignment: {
                 type: 'selected', value: ['Dashboard']
             },
@@ -70,7 +60,7 @@ export const Example = () => {
             }]
         });
 
-        return updateLayout(store.modules);
+        return updatePlacement(modules);
     }
 
     const onCancelBtnClick = () => {
@@ -113,7 +103,7 @@ export const Example = () => {
             await modulesStore.proxy.updateModule(module);
         }
 
-        await modulesStore.proxy.updateLayout({assignment: 'Dashboard', layout: cleanedPlacements})
+        await modulesStore.proxy.updatePlacements({assignment: 'Dashboard', placements: cleanedPlacements})
     };
 
     const onAddBtnClick = (type) => {
@@ -134,19 +124,18 @@ export const Example = () => {
         ));
 
         placements[1].unshift(newItem[0]);
-        updateLayout(modules, newItem[0]);
-        setPlacements(placements);
-        modulesStore.getAt(0).set('layout', placements);
+        updatePlacement(modules, newItem[0]);
+        records.set({ placements });
     }
 
     return (
         <Modules
-            state={placements}
-            setState={setPlacements}
+            placements={placements}
+            setPlacements={(placements) => { records.set({ placements }) }}
             onSaveBtnClick={onSaveBtnClick}
             onAddBtnClick={onAddBtnClick}
             editing={true}
-            modules={['Article', 'Navigation']}
+            modules={['Article']}
         />
     )
 }

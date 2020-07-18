@@ -153,16 +153,16 @@ export const cleanPlacements = (placements) => {
     return placements;
 };
 
-export const updatePlacements = (modules, layouts, components, props) => {
-    return layouts.map((record) => {
-        let blub = record.map((layout, idx) => {
-            let jo = modules.map((rec, index) => {
+export const updatePlacements = (modules, placements, components, props) => {
+    return placements.map((cols) => {
+        return cols.map((placement) => {
+            let jo = modules.map((rec) => {
                 const Component = components[rec.type];
                 if (rec.plugin[0]) {
-                    if (layout.id === rec.plugin[0].layout_id) {
+                    if (placement.id === rec.module_id) {
                         if (Component) {
                             const plugin = rec.plugin[0];
-                            return { id: layout.id, content: <Component {...plugin} {...props}/> };
+                            return { id: placement.id, content: <Component {...plugin} {...props}/> };
 
                         } else {
                             return null;
@@ -173,6 +173,5 @@ export const updatePlacements = (modules, layouts, components, props) => {
             }).filter(mapped => typeof mapped !== 'undefined' && mapped !== null);
             return jo[0];
         }).filter(mapped => typeof mapped !== 'undefined' && mapped !== null);
-        return blub;
     })
 };

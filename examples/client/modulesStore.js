@@ -5,7 +5,7 @@ export default createStore({
     model: {
         fields: [
             { name: 'modules', type: 'array' },
-            { name: 'layout', type: 'array' },
+            { name: 'placements', type: 'array' },
         ]
     },
     proxy: {
@@ -15,8 +15,8 @@ export default createStore({
                 url: '/modules/findModules',
                 method: 'get'
             },
-            updateLayout: {
-                url: '/modules/updateLayout',
+            updatePlacements: {
+                url: '/modules/updatePlacements',
                 method: 'post'
             },
             updateModule: {

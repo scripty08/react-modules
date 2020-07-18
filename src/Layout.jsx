@@ -12,19 +12,94 @@ import {
 
 import { Toolbar } from './Toolbar';
 import './Layout.scss';
+import { Module } from './Module';
+
 
 export const Layout = (props) => {
-    const { state, setState, onSaveBtnClick, onEditBtnClick, onAddBtnClick, editing = false, modules} = props;
+    const { placements, setPlacements, onSaveBtnClick, onEditBtnClick, onAddBtnClick, editing = false, modules} = props;
 
     const onDragEnd = (result) => {
-        onDragEndHelper(result, state, setState);
+        onDragEndHelper(result, placements, setPlacements);
+    }
+
+    const getCols = (idx) => {
+        switch (idx) {
+            case 1:
+                return colLayout.flyout;
+            case 2:
+                return colLayout.extra;
+            default:
+                return colLayout.logo;
+        }
+    }
+
+    const snapshot = (el, idx) => {
+        return (provided, snapshot) => {
+            return (
+                <div
+                    ref={provided.innerRef}
+                    style={getListStyle(snapshot.isDraggingOver)}
+                    {...provided.droppableProps}
+                >
+                    {getDraggable(el)}
+                    {provided.placeholder}
+                </div>
+            )
+        }
+    }
+
+    const getModule = (item) => {
+        return (provided, snapshot) => {
+            return (
+                <div
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                    style={getItemStyle(
+                        snapshot.isDragging,
+                        provided.draggableProps.style
+                    )}
+                >
+                    <Module item={item} >
+                        {item.content}
+                    </Module>
+                </div>
+            )
+        }
+    }
+
+    const getDraggable = (el) => {
+        return el.map((item, index) => {
+            return (
+                <Draggable
+                    isDragDisabled={!editing}
+                    key={item.id}
+                    draggableId={item.id}
+                    index={index}
+                >
+                    {getModule(item)}
+                </Draggable>
+            )
+        })
+    }
+
+    const getDroppable = () => {
+        return placements.map((el, idx) =>  {
+            return (
+                <Col {...getCols(idx)} key={idx}>
+                    <Droppable isDropDisabled={!editing} droppableId={`${idx}`}>
+                        {snapshot(el, idx)}
+                    </Droppable>
+                </Col>
+            )
+        })
     }
 
     return (
         <div className={'content-container'}>
             <Toolbar
-                state={state}
-                setState={setState}
+                placements={placements}
+                setPlacements={setPlacements}
                 onSaveBtnClick={onSaveBtnClick}
                 onAddBtnClick={onAddBtnClick}
                 editing={editing}
@@ -32,65 +107,7 @@ export const Layout = (props) => {
             />
                 <Row style={{ display: 'flex' }}>
                     <DragDropContext onDragEnd={onDragEnd}>
-                        {state.map((el, ind) => {
-
-                            let coller = colLayout.logo;
-
-                            if (ind === 1) {
-                                coller = colLayout.flyout;
-                            }
-
-                            if (ind === 2) {
-                                coller = colLayout.extra;
-                            }
-
-                            return (<Col {...coller} key={ind}>
-                                    <Droppable isDropDisabled={!editing} droppableId={`${ind}`}>
-                                        {(provided, snapshot) => (
-                                            <div
-                                                ref={provided.innerRef}
-                                                style={getListStyle(snapshot.isDraggingOver)}
-                                                {...provided.droppableProps}
-                                            >
-                                                {el.map((item, index) => (
-                                                    <Draggable
-                                                        isDragDisabled={!editing}
-                                                        key={item.id}
-                                                        draggableId={item.id}
-                                                        index={index}
-                                                    >
-                                                        {(provided, snapshot) => (
-                                                            <div
-                                                                ref={provided.innerRef}
-                                                                {...provided.draggableProps}
-                                                                {...provided.dragHandleProps}
-                                                                style={getItemStyle(
-                                                                    snapshot.isDragging,
-                                                                    provided.draggableProps.style
-                                                                )}
-                                                            >
-                                                                <div style={{position: 'relative'}}>
-                                                                    {item.content}
-                                                                    {/*<EditButton editing={editing} onEditButtonClick={onEditBtnClick} />
-                                                                    <DeleteButton
-                                                                        ind={ind}
-                                                                        index={index}
-                                                                        state={state}
-                                                                        setState={setState}
-                                                                        editing={editing}
-                                                                    />*/}
-                                                                </div>
-                                                            </div>
-                                                        )}
-                                                    </Draggable>
-                                                ))}
-                                                {provided.placeholder}
-                                            </div>
-                                        )}
-                                    </Droppable>
-                                </Col>
-                            )
-                        })}
+                        {getDroppable()}
                     </DragDropContext>
                 </Row>
         </div>
