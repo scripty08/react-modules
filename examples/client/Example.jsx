@@ -13,6 +13,7 @@ export const Example = () => {
     const { placementsStore } = useStore('placementsStore');
     const records = modulesStore.getAt(0);
     const placementsRecords = placementsStore.getAt(0);
+    const user = loginStore.getAt(0);
 
     useEffect(() => {
         modulesStore.proxy.findModules({ assignment: 'Dashboard' });
@@ -82,7 +83,7 @@ export const Example = () => {
                 Components={{ Article, Login: LoginComponent}}
                 onSaveBtnClick={onSaveBtnClick}
                 onAddBtnClick={onAddBtnClick}
-                editing={true}
+                editing={user.loggedIn}
                 menuItems={['Article']}
                 modules={modulesStore.data}
                 records={records}

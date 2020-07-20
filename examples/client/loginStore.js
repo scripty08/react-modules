@@ -4,7 +4,7 @@ export default createStore({
     name: 'loginStore',
     model: {
         fields: [
-            { name: 'isLoggedIn', type: 'boolean' },
+            { name: 'loggedIn', type: 'boolean' },
             { name: 'username', type: 'string'},
             { name: 'password', type: 'password'}
         ]
