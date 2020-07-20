@@ -2,7 +2,7 @@ import React from 'react';
 import { MenuButton, SaveButton } from '@scripty/react-buttons';
 import './Toolbar.scss';
 
-export const Toolbar = ({ onSaveBtnClick, onAddBtnClick, editing, modules }) => {
+export const Toolbar = ({ onSaveBtnClick, onAddBtnClick, editing, menuItems }) => {
 
     if (editing) {
 
@@ -11,7 +11,7 @@ export const Toolbar = ({ onSaveBtnClick, onAddBtnClick, editing, modules }) => 
         }
 
         const getLinks = () => {
-            return modules.map((module, idx) => {
+            return menuItems.map((module, idx) => {
                 return (
                     <a key={idx} onClick={onClick.bind(null, module)} aria-current={'page'} href={'#'}
                        className={'active'}>{module}</a>

@@ -1,6 +1,7 @@
 import { Server, IndexController } from '@scripty/server';
 import { ModulesController } from '@scripty/modules';
 import ArticlesController from '@scripty/articles';
+import { AuthController } from '@scripty/auth';
 import dotenv from 'dotenv'
 import { mongo } from '@scripty/mongo';
 
@@ -26,6 +27,7 @@ const init = async () => {
     await server.addController(new IndexController({ title: '@scripty/react-modules' }));
     await server.addController(new ModulesController());
     await server.addController(new ArticlesController());
+    await server.addController(new AuthController());
     server.start(3012);
 };
 

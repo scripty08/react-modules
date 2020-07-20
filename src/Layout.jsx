@@ -16,7 +16,7 @@ import { Module } from './Module';
 
 
 export const Layout = (props) => {
-    const { placements, setPlacements, onSaveBtnClick, onEditBtnClick, onAddBtnClick, editing = false, modules} = props;
+    const { placements, setPlacements, onSaveBtnClick, onAddBtnClick, editing = false, menuItems, modules, records, Components} = props;
 
     const onDragEnd = (result) => {
         onDragEndHelper(result, placements, setPlacements);
@@ -48,7 +48,7 @@ export const Layout = (props) => {
         }
     }
 
-    const getModule = (item) => {
+    const getModule = (item, index) => {
         return (provided, snapshot) => {
             return (
                 <div
@@ -60,9 +60,7 @@ export const Layout = (props) => {
                         provided.draggableProps.style
                     )}
                 >
-                    <Module item={item} >
-                        {item.content}
-                    </Module>
+                    <Module editing={editing} placements={placements} item_id={item.id} modules={modules} index={index} records={records} Components={Components} />
                 </div>
             )
         }
@@ -77,7 +75,7 @@ export const Layout = (props) => {
                     draggableId={item.id}
                     index={index}
                 >
-                    {getModule(item)}
+                    {getModule(item, index)}
                 </Draggable>
             )
         })
@@ -100,10 +98,10 @@ export const Layout = (props) => {
             <Toolbar
                 placements={placements}
                 setPlacements={setPlacements}
-                onSaveBtnClick={onSaveBtnClick}
+                onSaveBtnClick={onSaveBtnClick.bind(null, placements)}
                 onAddBtnClick={onAddBtnClick}
                 editing={editing}
-                modules={modules}
+                menuItems={menuItems}
             />
                 <Row style={{ display: 'flex' }}>
                     <DragDropContext onDragEnd={onDragEnd}>

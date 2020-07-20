@@ -1,141 +1,90 @@
 import React, { useEffect } from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
 import 'react-simple-flex-grid/lib/main.css';
 import { useStore } from '@scripty/react-store';
-import { cleanPlacements, getCount, getItems, Modules, updatePlacements } from '../../src';
+import { getNewItemId, Modules } from '../../src';
 import { Article } from '@scripty/react-articles';
+import { Login } from '@scripty/react-login';
+import placementsStore from './placementsStore';
 
 export const Example = () => {
     const { modulesStore } = useStore('modulesStore');
-    const { articlesStore } = useStore('articlesStore');
+    const { placementsStore } = useStore('placementsStore');
     const records = modulesStore.getAt(0);
-    const modules = records.get('modules');
-    const placements = records.get('placements');
-    const articles = articlesStore.getAt(0);
+    const placementsRecords = placementsStore.getAt(0);
 
     useEffect(() => {
-        modulesStore.proxy.findModules({assignment: 'Dashboard'});
+        modulesStore.proxy.findModules({ assignment: 'Dashboard' });
     }, []);
 
     useEffect(() => {
-        updatePlacement(modules);
-    }, [modules]);
+        placementsStore.proxy.findPlacements({ assignment: 'Dashboard' });
+    }, [modulesStore.data]);
 
-    const updatePlacement = (modules, newItem) => {
-        const props = {
-            onOkBtnClick: onOkBtnClick,
-            onCancelBtnClick,
-            onChange: onArticleChange,
-            showEditBtn: true
-        };
+    const onSaveBtnClick = async () => {
+        const dirtyModules = modulesStore.getDirtyRecords();
+        const dirtyPlacements = placementsStore.getDirtyRecords();
 
-        let updatedPlacements = updatePlacements(modules, placements, {Article}, props)
-        records.set({ placements: updatedPlacements });
-    }
-
-    const onOkBtnClick = () => {
-        records.set({ placements });
-
-        if (articles.action === 'edit') {
-            let updatedModules = modules.map((record) => {
-                if (record.module_id === articles._id) {
-                    record.plugin[0] = articles;
-                    return record;
-                } else {
-                    return record;
-                }
-            });
-
-            return updatePlacement(updatedModules)
+        if (dirtyModules) {
+            await modulesStore.proxy.updateModules(dirtyModules);
         }
-
-        modules.push({
-            assignment: {
-                type: 'selected', value: ['Dashboard']
-            },
-            type: 'Article',
-            plugin: [{
-                title: articles.title,
-                html: articles.html,
-                layout_id: articles.layout_id
-            }]
-        });
-
-        return updatePlacement(modules);
-    }
-
-    const onCancelBtnClick = () => {
-        console.log('cancel', '  <------------');
-    }
-
-    const onArticleChange = ({_id, title, html, layout_id}) => {
-
-        let filtered = modules.filter((module) => {
-            return module.module_id === _id
-        });
-
-        //if editing
-        if (filtered.length > 0) {
-            return articles.set({
-                ...filtered[0].plugin[0],
-                action: 'edit',
-                _id, title, html, layout_id
-            });
+        if (dirtyPlacements) {
+            await placementsStore.proxy.updatePlacements(placementsStore.data);
         }
-
-        articles.set({_id, title, html, layout_id});
-    }
-
-    const onSaveBtnClick = async (state, setState) => {
-        const cleanedPlacements = cleanPlacements(placements);
-        let module = modules[modules.length -1];
-
-        if (articles.action === 'edit') {
-            let response = await articlesStore.proxy.update(articles);
-            module.module_id = response.entries[0]._id;
-            await modulesStore.proxy.updateModule(module);
-        }
-
-        if (articles.action === 'new') {
-            delete articles['_id'];
-            let response = await articlesStore.proxy.update(articles);
-            module.module_id = response.entries[0]._id;
-            module.plugin = [{_id: response.entries[0]._id}];
-            await modulesStore.proxy.updateModule(module);
-        }
-
-        await modulesStore.proxy.updatePlacements({assignment: 'Dashboard', placements: cleanedPlacements})
     };
 
     const onAddBtnClick = (type) => {
+        const id = getNewItemId(placementsRecords.placements);
+        let model = modulesStore.createModel({
+            item_id: id,
+            type: 'Article',
+            assignment: {
+                type: 'selected',
+                value: [
+                    'Dashboard'
+                ]
+            },
+            plugin: [{
+                title: '',
+                html: '',
+                edit: true
+            }]
+        });
 
-        articles.set({action: 'new'});
+        model.setDirty();
+        modulesStore.setData(model);
 
-        let newItem = getItems(1, getCount(placements), (
-            <Article
-                title={articles.title}
-                html={articles.html}
-                layout_id={'item-' + getCount(placements)}
-                edit={true}
-                showEditBtn={true}
-                onChange={onArticleChange}
-                onOkBtnClick={onOkBtnClick}
-                onCancelBtnClick={onCancelBtnClick}
-            />
-        ));
+        const record = placementsStore.data[0];
+        record.placements[1].unshift({ id: id });
+        record.set(record.placements);
+        record.setDirty();
+    }
 
-        placements[1].unshift(newItem[0]);
-        updatePlacement(modules, newItem[0]);
-        records.set({ placements });
+    const onSubmit = (data) => {
+        const { username, password } = data;
+        console.log(username, password);
+    }
+
+    const LoginComponent = () => {
+        return <Login loginPath={'/'} onLoginSubmit={onSubmit} />
     }
 
     return (
-        <Modules
-            placements={placements}
-            setPlacements={(placements) => { records.set({ placements }) }}
-            onSaveBtnClick={onSaveBtnClick}
-            onAddBtnClick={onAddBtnClick}
-            editing={true}
-            modules={['Article']}
-        />
+        <Router>
+            <Modules
+                placements={placementsRecords.placements}
+                setPlacements={(placements) => {
+                    placementsRecords.set({ placements });
+                    placementsRecords.setDirty();
+                }}
+                Components={{ Article, Login: LoginComponent}}
+                onSaveBtnClick={onSaveBtnClick}
+                onAddBtnClick={onAddBtnClick}
+                editing={true}
+                menuItems={['Article']}
+                modules={modulesStore.data}
+                records={records}
+            />
+        </Router>
     )
 }

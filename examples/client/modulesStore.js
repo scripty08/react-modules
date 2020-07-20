@@ -4,8 +4,11 @@ export default createStore({
     name: 'modulesStore',
     model: {
         fields: [
-            { name: 'modules', type: 'array' },
-            { name: 'placements', type: 'array' },
+            { name: 'plugin', type: 'array' },
+            { name: 'assignment', type: 'object'},
+            { name: 'type', type: 'string'},
+            { name: 'module_id', type: 'string'},
+            { name: 'item_id', type: 'string'}
         ]
     },
     proxy: {
@@ -15,12 +18,12 @@ export default createStore({
                 url: '/modules/findModules',
                 method: 'get'
             },
-            updatePlacements: {
-                url: '/modules/updatePlacements',
+            updateModules: {
+                url: '/modules/updateModules',
                 method: 'post'
             },
-            updateModule: {
-                url: '/modules/updateModule',
+            destroyModules: {
+                url: '/modules/destroyModules',
                 method: 'post'
             }
         }

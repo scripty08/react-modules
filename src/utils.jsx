@@ -3,12 +3,13 @@ import {
     DeleteButton as ScriptyDeleteButton,
     EditButton as ScriptyEditButton,
 } from '@scripty/react-buttons';
+import { Module } from './Module';
 
-export const getCount = (state) => {
+export const getNewItemId = (state) => {
     let col1 = state[0].length;
     let col2 = state[1].length;
     let col3 = state[2].length;
-    return col1 + col2 + col3 +1;
+    return 'item-' + (col1 + col2 + col3 +1);
 }
 
 export const getItems = (count, offset = 0, component) =>
@@ -153,16 +154,22 @@ export const cleanPlacements = (placements) => {
     return placements;
 };
 
-export const updatePlacements = (modules, placements, components, props) => {
+export const updatePlacements = (modules, placements, components, props, onEdit) => {
     return placements.map((cols) => {
         return cols.map((placement) => {
             let jo = modules.map((rec) => {
                 const Component = components[rec.type];
+
                 if (rec.plugin[0]) {
-                    if (placement.id === rec.module_id) {
+                    if (placement.id === rec.item_id) {
                         if (Component) {
                             const plugin = rec.plugin[0];
-                            return { id: placement.id, content: <Component {...plugin} {...props}/> };
+                            return {
+                                id: placement.id,
+                                content: (
+                                    <Component {...plugin} {...props}/>
+                                )
+                            };
 
                         } else {
                             return null;
