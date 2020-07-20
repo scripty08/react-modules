@@ -8,6 +8,7 @@ import { Login } from '@scripty/react-login';
 import placementsStore from './placementsStore';
 
 export const Example = () => {
+    const { loginStore } = useStore('loginStore');
     const { modulesStore } = useStore('modulesStore');
     const { placementsStore } = useStore('placementsStore');
     const records = modulesStore.getAt(0);
@@ -63,6 +64,7 @@ export const Example = () => {
     const onSubmit = (data) => {
         const { username, password } = data;
         console.log(username, password);
+        loginStore.proxy.login(data)
     }
 
     const LoginComponent = () => {
