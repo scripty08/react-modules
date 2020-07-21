@@ -7,6 +7,10 @@ import { Article } from '@scripty/react-articles';
 import { Login } from '@scripty/react-login';
 import placementsStore from './placementsStore';
 
+const initialPlacements = [
+    [], [], []
+]
+
 export const Example = () => {
     const { loginStore } = useStore('loginStore');
     const { modulesStore } = useStore('modulesStore');
@@ -77,13 +81,22 @@ export const Example = () => {
             <Modules
                 placements={placementsRecords.placements}
                 setPlacements={(placements) => {
-                    placementsRecords.set({ placements });
+                    let pal = placements;
+                    if (placements.length < 3) {
+                        pal = pal.concat([[]])
+                    }
+                    if (placements.length < 2) {
+                        pal = pal.concat([[], []])
+                    }
+                    placementsRecords.set({
+                        placements: pal
+                    });
                     placementsRecords.setDirty();
                 }}
                 Components={{ Article, Login: LoginComponent}}
                 onSaveBtnClick={onSaveBtnClick}
                 onAddBtnClick={onAddBtnClick}
-                editing={user.loggedIn}
+                editing={true}
                 menuItems={['Article']}
                 modules={modulesStore.data}
                 records={records}

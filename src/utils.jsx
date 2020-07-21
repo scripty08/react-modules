@@ -1,15 +1,17 @@
-import React, { useState, Fragment } from 'react';
+import React from 'react';
 import {
     DeleteButton as ScriptyDeleteButton,
     EditButton as ScriptyEditButton,
 } from '@scripty/react-buttons';
-import { Module } from './Module';
 
 export const getNewItemId = (state) => {
-    let col1 = state[0].length;
-    let col2 = state[1].length;
-    let col3 = state[2].length;
-    return 'item-' + (col1 + col2 + col3 +1);
+    if (state.length > 0) {
+        let col1 = state[0].length;
+        let col2 = state[1].length;
+        let col3 = state[2].length;
+        return 'item-' + (col1 + col2 + col3 +1);
+    }
+    return 'item-' + Math.random();
 }
 
 export const getItems = (count, offset = 0, component) =>

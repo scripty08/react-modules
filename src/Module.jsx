@@ -10,8 +10,7 @@ export const Module = (props) => {
         placements,
         index,
         records,
-        Components,
-        editing
+        Components
     } = props;
 
     let componentType = '';
@@ -23,20 +22,6 @@ export const Module = (props) => {
        }
     });
 
-    const onOkBtnClick = (response) => {
-
-        let updatedModules = modules.map((rec) => {
-            if (rec.item_id === bla[0].item_id) {
-                rec.plugin[0] = response;
-                rec.setDirty();
-                return rec;
-            }
-        });
-
-        records.set({modules: updatedModules});
-    }
-
-
 
     if (bla.length > 0) {
 
@@ -45,8 +30,7 @@ export const Module = (props) => {
         return (
             <Component
                 {...bla[0].plugin[0]}
-                showEditBtn={editing}
-                onOkBtnClick={onOkBtnClick}
+                item_id={item_id}
             />
         );
     }
